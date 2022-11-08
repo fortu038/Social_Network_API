@@ -21,22 +21,32 @@ const userSchema = new Schema(
       //   message: "Invalid email",
       // },
     },
-    thought: [Schema.Types.ObjectId],
-    friends: [Schema.Types.ObjectId],
+    // The below two are probably using _id incorrectly
+    thought: [
+      {
+        type: Schema.Types.ObjectId,
+      }
+    ],
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+      }
+    ],
   },
   {
     toJSON: {
-      virtuals: true,
+      // virtuals: true,
+      getters: true,
     },
-    id: false,
+    // id: false,
   },
 );
 
-userSchema
-  .virtuals("friendCount")
-  .get(function () {
-    return this.friends.length;
-  });
+// userSchema
+//   .virtuals("friendCount")
+//   .get(function () {
+//     return this.friends.length;
+//   });
 
 const User = model("user", userSchema);
 
