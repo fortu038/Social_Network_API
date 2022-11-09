@@ -22,7 +22,7 @@ const userSchema = new Schema(
       // },
     },
     // The below two are probably using _id incorrectly
-    thought: [
+    thoughts: [
       {
         type: Schema.Types.ObjectId,
       }
