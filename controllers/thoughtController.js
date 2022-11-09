@@ -1,5 +1,5 @@
 const { ObjectId } = require('mongoose').Types;
-const { User, Thought } = require('../models');
+const { User, Thought, Reaction } = require('../models');
 
 module.exports = {
   getThoughts(req, res) {
@@ -74,13 +74,44 @@ module.exports = {
   },
 
   deleteThought(req, res) {
-    console.log(">>>deleteThought");
-    res.sendStatus(200);
+    // console.log(">>>deleteThought");
+    // res.sendStatus(200);
+    Thought.findOneAndDelete({ _id: req.params.thoughtId })
+      .then((thought) =>
+        !thought
+          ? res.status(404).json({ message: 'No thought with that ID' })
+          : User.deleteMany({ _id: { $in: thought.reactions } })
+      )
+      .then(() => res.json({ message: 'Thought and reactions deleted!' }))
+      .catch((err) => res.status(500).json(err));
   },
 
   addReaction(req, res) {
-    console.log(">>>addReaction");
-    res.sendStatus(200);
+    // console.log(">>>addReaction");
+    // res.sendStatus(200);
+    Thought.findOne({_id: req.params.thoughtId})
+      .then((thought) => {
+        // console.log(thought);
+        !thought
+          ? res.status(404).json({message: "No thought with that ID found"})
+          : () => {
+            Reaction.create(req.body)
+              .then((reaction) => {
+                console.log(reaction);
+                thought.reactions.push(reaction._id)
+              })
+          }
+      })
+      .then((result) => {
+        // console.log(result);
+        !result
+          ? res.status(404).json({message: "Reaction not added"})
+          : res.json({message: "Reaction added"})
+        })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      })
   },
 
   deleteReaction(req, res) {
