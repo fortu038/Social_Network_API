@@ -41,13 +41,30 @@ module.exports = {
   },
 
   createUser(req, res) {
-    console.log(">>>createUser");
-    res.sendStatus(200);
+    // console.log(">>>createUser");
+    // res.sendStatus(200);
+    User.create(req.body)
+      .then((user) => res.json(user))
+      .catch((err) => res.status(500).json(err));
   },
 
   updateUser(req, res) {
-    console.log(">>>updateUser");
-    res.sendStatus(200);
+    // console.log(">>>updateUser");
+    // res.sendStatus(200);
+    User.findOneAndUpdate(
+      { _id: req.params.userId },
+      { $set: req.body },
+      { runValidators: true, new: true }
+    )
+      .then((updatedUser) =>
+        !updatedUser
+          ? res.status(404).json({ message: 'No user with this ID!' })
+          : res.json(updatedUser)
+      )
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
   },
 
   deleteUser(req, res) {
