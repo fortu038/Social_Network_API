@@ -1,4 +1,4 @@
-const {Schema, model} = require("mongoose");
+const { Schema, model } = require('mongoose');
 
 const userSchema = new Schema(
   {
@@ -12,7 +12,6 @@ const userSchema = new Schema(
       type: String,
       unique: true,
       required: true,
-      // How do I get validators to work?
       // validate: {
       //   validator: () => {
       //     const regex = new RegExp(/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/);
@@ -21,7 +20,6 @@ const userSchema = new Schema(
       //   message: "Invalid email",
       // },
     },
-    // The below two are probably using _id incorrectly
     thoughts: [
       {
         type: Schema.Types.ObjectId,
@@ -38,14 +36,13 @@ const userSchema = new Schema(
   {
     toJSON: {
       virtuals: true,
-      // getters: true,
     },
     id: false,
   },
 );
 
 userSchema
-  .virtuals("friendCount")
+  .virtual("friendCount")
   .get(function () {
     return this.friends.length;
   });

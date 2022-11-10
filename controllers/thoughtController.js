@@ -35,22 +35,21 @@ module.exports = {
   },
 
   createThought(req, res) {
-    // console.log(">>>createThought");
-    // res.sendStatus(200);
     Thought.create(req.body)
       .then(async (newThought) => {
-        console.log(newThought);
-        // console.log(req.body);
-        await User.findOne({ username: req.body.username})
-          // .then(async (user) => await console.log(thought._id));
-          .then(async (user) => {
-            console.log(user);
-            await user.thoughts.push(newThought._id);
-          });
-          // ^ This insertion isn't working right; how can I fix it?
-
-        res.json(newThought);
+        await User.findOneAndUpdate(
+            {username: req.body.username},
+            {$addToSet: {thoughts: newThought._id}},
+            {new: true}
+          );
       })
+      .then((user) =>
+      !user
+        ? res.status(404).json({
+            message: 'Thought created but no user with that name was found',
+          })
+        : res.json("Created thought")
+      )
       .catch((err) => res.status(500).json(err));
   },
 
@@ -80,7 +79,11 @@ module.exports = {
       .then((thought) =>
         !thought
           ? res.status(404).json({ message: 'No thought with that ID' })
-          : User.deleteMany({ _id: { $in: thought.reactions } })
+          : User.findOneAndUpdate(
+            { username: thought.username},
+            {$pull: {thoughts: req.params.thoughtId}},
+            {runValidators: true, new: true}
+          )
       )
       .then(() => res.json({ message: 'Thought and reactions deleted!' }))
       .catch((err) => res.status(500).json(err));
@@ -89,33 +92,32 @@ module.exports = {
   addReaction(req, res) {
     // console.log(">>>addReaction");
     // res.sendStatus(200);
-    Thought.findOne({_id: req.params.thoughtId})
-      .then((thought) => {
-        // console.log(thought);
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $addToSet: { reactions: req.body } },
+      { runValidators: true, new: true}
+    )
+      .then((thought) =>
         !thought
-          ? res.status(404).json({message: "No thought with that ID found"})
-          : () => {
-            Reaction.create(req.body)
-              .then((reaction) => {
-                console.log(reaction);
-                thought.reactions.push(reaction._id)
-              })
-          }
-      })
-      .then((result) => {
-        // console.log(result);
-        !result
-          ? res.status(404).json({message: "Reaction not added"})
-          : res.json({message: "Reaction added"})
-        })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json(err);
-      })
+          ? res.status(404).json({message: "No thought with this ID"})
+          : res.json(thought)
+      )
+      .catch((err) => res.status(500).json(err));
   },
 
   deleteReaction(req, res) {
-    console.log(">>>deleteReaction");
-    res.sendStatus(200);
+    // console.log(">>>deleteReaction");
+    // res.sendStatus(200);
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $pull: { reactions: { reactionId: req.params.reactionId } } },
+      { runValidators: true, new: true }
+    )
+      .then((thought) =>
+        !thought
+          ? res.status(404).json({ message: 'No thought with this id!' })
+          : res.json(thought)
+      )
+      .catch((err) => res.status(500).json(err));
   }
 };

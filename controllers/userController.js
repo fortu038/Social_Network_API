@@ -75,7 +75,7 @@ module.exports = {
         !user
           ? res.status(404).json({ message: 'No such user exists' })
           : Thought.findOneAndUpdate(
-              { reactions: req.params.username },
+              { username: user.username },
               { $pull: { users: req.params.username } },
               { new: true }
             )
@@ -96,64 +96,32 @@ module.exports = {
   addFriend(req, res) {
     // console.log(">>>addFriend");
     // res.sendStatus(200);
-    User.findOne({_id: req.params.userId})
+    User.findOneAndUpdate(
+      {_id: req.params.userId},
+      {$addToSet: { friends: req.params.friendId }},
+      {runValidators: true, new: true}
+    )
       .then((user) =>
         !user
-          ? res.status(404).json({message: "No user with that ID found"})
-          : User.findOne({_id: req.params.friendId})
-            .then((friend) =>
-            !friend
-              ? res.status(404).json({message: "Nobody with that ID found"})
-              : () => {
-                if(user.friends.indexOf(friend._id) > -1) {
-                  res.status(404).json({message: "You've already added this person"})
-                }
-                user.friends.push(friend._id) // <- Should I not be using push for ID arrays?
-              }
-            )
+          ? res.status(404).json({ message: 'No user with this id!' })
+          : res.json(user)
       )
-      .then((result) =>
-        !result
-          ? res.status(404).json({message: "Friend not added"})
-          : res.json({message: "Friend added"})
-      )
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json(err);
-      })
+      .catch((err) => res.status(500).json(err));
   },
 
   deleteFriend(req, res) {
     // console.log(">>>deleteFriend");
     // res.sendStatus(200);
-    User.findOne({_id: req.params.userId})
-      .then((user) => 
+    User.findOneAndUpdate(
+      {_id: req.params.userId},
+      {$pull: {friends: req.params.friendId}},
+      {runValidators: true, new: true}
+    )
+      .then((user) =>
         !user
-          ? res.status(404).json({message: "No user with that ID found"})
-          : User.findOne({_id: req.params.friendId})
-            .then((enemy) =>
-              !enemy
-                ? res.status(404).json({message: "Nobody with that ID found"})
-                : () => {
-                  const friendHolder = user.friends;
-                  console.log(`>>>user is ${user}`);
-                  const index = friendHolder.indexOf(enemy._id);
-
-                  if(index <= -1 || friendHolder.length == 0) {
-                    res.status(404).json({message: "No one in your friend list with that ID"});
-                  }
-                  friendHolder.splice(index, 1);
-                }
-            )
+          ? res.status(404).json({ message: 'No user with this id!' })
+          : res.json(user)
       )
-      .then((result) =>
-        !result
-          ? res.status(404).json({message: "Friend not rmeoved"})
-          : res.json({message: "Friend removed"})
-      )
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json(err);
-      })
+      .catch((err) => res.status(500).json(err));
   }
 };
