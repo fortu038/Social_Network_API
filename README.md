@@ -26,4 +26,5 @@ Please refer to the license in the repo
 
 ## Links and Images
 Github Repo URL: https://github.com/fortu038/Social_Network_API
+
 Walkthrough Video URL: https://drive.google.com/file/d/1Yx1f296F3iEj-L96JOHRNNHGpQF5Bm3q/view
