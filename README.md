@@ -6,7 +6,7 @@ The goal of this project was to build a simulated backend of a social media site
 
 ## Installation
 
-The runtime Node.js must be installed, after which all necessary packages can be installed by typing "npm i" into the terminal. The NoSQL database Mongoose must also be installed. For testing routes an API client should be installed and it is recommend that Insomnia be used, as it was the client used during testing. The database can be seeded with users by typing "node utils/seed.js" in the temrinal.
+The runtime Node.js must be installed, after which all necessary packages can be installed by typing "npm i" into the terminal. The NoSQL database MongoDB must also be installed. For testing routes an API client should be installed and it is recommend that Insomnia be used, as it was the client used during testing. The database can be seeded with users by typing "node utils/seed.js" in the temrinal.
 
 ## Usage
 
