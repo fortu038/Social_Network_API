@@ -41,15 +41,15 @@ module.exports = {
             {username: req.body.username},
             {$addToSet: {thoughts: newThought._id}},
             {new: true}
-          );
+          )
+        .then((user) =>
+          !user
+          ? res.status(404).json({
+              message: 'Thought created but no user with that name was found',
+            })
+          : res.json({ result: "Success", thought: newThought })
+        )
       })
-      .then((user) =>
-      !user
-        ? res.status(404).json({
-            message: 'Thought created but no user with that name was found',
-          })
-        : res.json("Created thought")
-      )
       .catch((err) => res.status(500).json(err));
   },
 
