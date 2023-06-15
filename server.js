@@ -4,10 +4,9 @@ const routes = require('./routes');
 
 const cwd = process.cwd();
 
-const PORT = process.env.PORT || 3001;
 const app = express();
+const PORT = process.env.PORT || 3001;
 
-// Note: not necessary for the Express server to function. This just helps indicate what activity's server is running in the terminal.
 const activity = cwd.includes('Social_Network_API')
   ? cwd.split('/Social_Network_API/')[1]
   : cwd;
