@@ -75,7 +75,7 @@ const updateUserById = async (req, res) => {
     );
 
     if(updateByIdQuery == null) {
-      res.status(400).json({ message: "No user with ID found so no updates can occur." });
+      res.status(400).json({ message: "No user with that ID found so no updates can occur." });
       return;
     }
     
@@ -91,7 +91,7 @@ const deleteUserById = async (req,res) => {
     const delByIdQuery = await User.findOneAndDelete({ _id: req.params.userId });
 
     if(delByIdQuery == null) {
-      res.status(400).json({ message: "No user found with that ID." });
+      res.status(400).json({ message: "No user with that ID found so no deletion can occur." });
       return;
     }
 
@@ -104,16 +104,17 @@ const deleteUserById = async (req,res) => {
 
 const addFriendById = async (req, res) =>  {
   try {
-    const params = req.params;
+    const usr_id = req.params.userId;
+    const frnd_id = req.params.friendId;
 
-    const userCheck = await User.findOne({ _id: params.userId });
+    const userCheck = await User.findOne({ _id: usr_id });
 
     if(userCheck == null) {
       res.status(400).json({ message: "No user with that ID found so their friends list cannot be modified." });
       return;
     }
 
-    const friendCheck = await User.findOne({ _id: params.friendId });
+    const friendCheck = await User.findOne({ _id: frnd_id });
 
     if(friendCheck == null) {
       res.status(400).json({ message: "This friend can't be added since no user with that ID was found." });
@@ -121,8 +122,8 @@ const addFriendById = async (req, res) =>  {
     }
 
     const addFriendByIdQuery = await User.findOneAndUpdate(
-      {_id: params.userId},
-      {$addToSet: { friends: params.friendId }},
+      {_id: usr_id},
+      {$addToSet: { friends: frnd_id }},
       {runValidators: true, new: true}
     );
 
