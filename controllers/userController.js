@@ -107,6 +107,11 @@ const addFriendById = async (req, res) =>  {
     const usr_id = req.params.userId;
     const frnd_id = req.params.friendId;
 
+    if(usr_id == frnd_id) {
+      res.status(400).json({ message: "A user cannot add themselves as a friend." });
+      return;
+    }
+
     const userCheck = await User.findOne({ _id: usr_id });
 
     if(userCheck == null) {
@@ -140,7 +145,8 @@ const deleteFriendById = async (req, res) => {
     const frnd_id = req.params.friendId;
 
     if(usr_id == frnd_id) {
-      res.status(400).json({ message: "A user cannot add themselves as a friend." });
+      res.status(400).json({ message: "A user cannot be deleted from their own friends list." });
+      return;
     }
 
     const userCheck = await User.findOne({ _id: usr_id });
