@@ -108,15 +108,15 @@ const addFriendById = async (req, res) =>  {
     const usr_id = req.params.userId;
     const frnd_id = req.params.friendId;
 
-    if(usr_id === frnd_id) {
-      res.status(400).json({ message: "A user cannot add themselves as a friend." });
-      return;
-    }
-
     const userCheck = await User.findOne({ _id: usr_id });
 
     if(userCheck === null) {
       res.status(400).json({ message: "No user with that ID found so their friends list cannot be modified." });
+      return;
+    }
+
+    if(usr_id === frnd_id) {
+      res.status(400).json({ message: "A user cannot add themselves as a friend." });
       return;
     }
 
@@ -150,11 +150,6 @@ const deleteFriendById = async (req, res) => {
     const usr_id = req.params.userId;
     const frnd_id = req.params.friendId;
 
-    if(usr_id === frnd_id) {
-      res.status(400).json({ message: "A user cannot be deleted from their own friends list." });
-      return;
-    }
-
     const userCheck = await User.findOne({ _id: usr_id });
 
     if(userCheck === null) {
@@ -162,10 +157,15 @@ const deleteFriendById = async (req, res) => {
       return;
     }
 
+    if(usr_id === frnd_id) {
+      res.status(400).json({ message: "A user cannot be deleted from their own friends list." });
+      return;
+    }
+
     const friendCheck = await User.findOne({ _id: frnd_id });
 
     if(friendCheck === null) {
-      res.status(400).json({ message: "This friend can't be removed since no user you're friends with has that ID." });
+      res.status(400).json({ message: "This friend can't be removed since no user with that ID was found." });
       return;
     }
 
