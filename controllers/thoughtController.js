@@ -17,7 +17,8 @@ const getThoughtById = async (req, res) => {
     const getByIdQuery = await Thought.findById(req.params.thoughtId);
 
     if(getByIdQuery === null) {
-      res.status(400).json({ message: "No thought with that ID found!" })
+      res.status(400).json({ message: "No thought with that ID found!" });
+      return;
     }
 
     res.status(200).json({ result: "success", payload: getByIdQuery });
@@ -153,7 +154,7 @@ const deleteReactionById = async (req, res) => {
     let is_found = thoughtCheck.reactions.find(reaction => reaction.reactionId.toString() === reaction_id);
 
     if(is_found === undefined) {
-      res.status(400).json({ message: "No reaction assoicated with this thought found with that ID." });
+      res.status(400).json({ message: "No reaction with that ID assoicated with this thought." });
       return;
     }
 
